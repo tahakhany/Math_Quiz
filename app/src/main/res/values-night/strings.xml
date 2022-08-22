@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_activity_life_label_text">Lives Remaining: </string>
+    <string name="main_activity_score_lable">: Score</string>
+    <string name="main_activity_answer_edt">Type your answer here</string>
+    <string name="main_activity_next_quiz_btn">next</string>
+    <string name="main_activity_end_quiz_btn_text">End</string>
+    <string name="main_activity_highscore_label">" :High Score"</string>
+    <string name="main_activity_start_btn_text">Try again!</string>
+</resources>
