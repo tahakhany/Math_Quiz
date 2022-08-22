@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             if (endStartQuizBtn.getText().equals(getString(R.string.main_activity_end_quiz_btn_text))) {
                 endGameProcedure();
             } else if (endStartQuizBtn.getText().equals(getString(R.string.main_activity_start_btn_text))) {
+                endStartQuizBtn.setText(getString(R.string.main_activity_end_quiz_btn_text));
                 startGameProcedure();
             }
         });
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startGameProcedure() {
+        nextQuizBtn.setEnabled(true);
         loadAppData();
         updateScoresAndLives();
         answer = initializeNewQuiz();
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void endGameProcedure() {
+        nextQuizBtn.setEnabled(false);
         countDownTimer.cancel();
         timeRemainingPbar.setProgress(10);
         timeRemainingPbar.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.progress_bar_inactive_blue)));
