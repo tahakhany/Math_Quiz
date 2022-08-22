@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,11 +25,13 @@ public class MainActivity extends AppCompatActivity {
     EditText answerBoxEdt;
     Button nextQuizBtn;
     Button endStartQuizBtn;
+    ProgressBar timeRemainingPbar;
     int score;
     int highScore;
     int lives;
     int answer;
     SharedPreferences sharedPreferences;
+    CountDownTimer countDownTimer;
     final static String FILE_NAME = "quiz_save_data";
 
     @Override
@@ -42,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         answerBoxEdt = findViewById(R.id.main_activity_answer_edt);
         nextQuizBtn = findViewById(R.id.main_activity_next_quiz_btn);
         endStartQuizBtn = findViewById(R.id.main_activity_end_start_quiz_btn);
+        timeRemainingPbar = findViewById(R.id.main_activity_time_remaining_pbar);
         //Initializing the views___________________________________________
 
         //Initializing the values___________________________________________
@@ -87,6 +93,35 @@ public class MainActivity extends AppCompatActivity {
         questionBoxTxt.setText(quiz.getQuestion());
         answerBoxEdt.setText("");
         answer = quiz.getAnswer();
+        timeRemainingPbar.setProgress(10);
+        timeRemainingPbar.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.progress_bar_high_green)));
+
+
+        countDownTimer = new CountDownTimer(10000,1000) {
+            @Override
+            public void onTick(long l) {
+                int progress = timeRemainingPbar.getProgress();
+                progress--;
+                if(progress<2){
+                    timeRemainingPbar.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.progress_bar_low_red)));
+                }
+                timeRemainingPbar.setProgress(progress);
+            }
+
+            @Override
+            public void onFinish() {
+                lives--;
+                if (lives == 0) {
+                    endGameProcedure();
+                } else {
+                    Toast.makeText(MainActivity.this, "Times up!\n" +
+                            "Correct Answer: " + answer, Toast.LENGTH_SHORT).show();
+                    updateScoresAndLives();
+                    initializeNewQuiz();
+                }
+            }
+        };
+        countDownTimer.start();
         return answer;
     }
 
@@ -98,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void endGameProcedure() {
+        countDownTimer.cancel();
+        timeRemainingPbar.setProgress(10);
+        timeRemainingPbar.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.progress_bar_inactive_blue)));
         Toast.makeText(MainActivity.this, "Game Over!", Toast.LENGTH_LONG).show();
         endStartQuizBtn.setText(R.string.main_activity_start_btn_text);
         answerBoxEdt.setEnabled(false);
@@ -105,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
             highScore = score;
         }
         updateScoresAndLives();
-        endStartQuizBtn.setText(getString(R.string.main_activity_end_quiz_btn_text));
         saveAppData(true);
     }
 
@@ -143,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkAnswer() {
+        countDownTimer.cancel();
         if (String.valueOf(answerBoxEdt.getText()).equals(String.valueOf(answer))) {
             score++;
             if (score > highScore) highScore = score;
